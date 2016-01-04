@@ -64,7 +64,6 @@
 	var React = __webpack_require__(2);
 	var $ = __webpack_require__(3);
 	var Comments = __webpack_require__(4);
-	console.log('entry');
 
 	var List = (function (_React$Component) {
 	    _inherits(List, _React$Component);
@@ -77,11 +76,35 @@
 	    }
 
 	    _createClass(List, [{
-	        key: 'render',
-	        value: function render() {
+	        key: 'addTodo',
+	        value: function addTodo() {
+	            var todoText = this.refs.todotext.value;
+	            console.log(todoText);
+	            this.refs.todotext.value = '';
+	            var newTodo = { text: todoText, id: this.state.comments.length.toString() + ':' + Math.random().toString() };
+	            this.setState({ comments: this.state.comments.concat([newTodo]) });
+	        }
+	    }, {
+	        key: 'showTodos',
+	        value: function showTodos() {
 	            return this.state.comments.map(function (comment) {
 	                return React.createElement(Comments, { comment: comment });
 	            });
+	        }
+	    }, {
+	        key: 'render',
+	        value: function render() {
+	            return React.createElement(
+	                'div',
+	                null,
+	                React.createElement('input', { ref: 'todotext', type: 'text' }),
+	                React.createElement(
+	                    'button',
+	                    { onClick: this.addTodo.bind(this) },
+	                    ' click '
+	                ),
+	                this.showTodos()
+	            );
 	        }
 	    }]);
 
@@ -28134,16 +28157,16 @@
 
 	        _get(Object.getPrototypeOf(Comments.prototype), 'constructor', this).call(this, props);
 	        this.props = props;
-	        console.log(props);
 	    }
 
 	    _createClass(Comments, [{
 	        key: 'render',
 	        value: function render() {
+	            console.log(this.props);
 	            return React.createElement(
 	                'p',
-	                null,
-	                this.props.comment
+	                { key: this.props.comment.id, id: this.props.comment.id },
+	                this.props.comment.text
 	            );
 	        }
 	    }]);

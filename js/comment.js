@@ -10,7 +10,7 @@ class Comments extends React.Component {
     }
 
     render() {
-        return <p>{this.props.comment}</p>;
+        return <p key={this.props.comment.id} id={this.props.comment.id}>{this.props.comment.text}</p>;
     }
 }
 
