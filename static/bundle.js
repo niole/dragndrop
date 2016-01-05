@@ -72,23 +72,57 @@
 	        _classCallCheck(this, List);
 
 	        _get(Object.getPrototypeOf(List.prototype), 'constructor', this).call(this, props);
-	        this.state = { comments: [] };
+	        this.state = { comments: [],
+	            target: { index: null, x: null, y: null } };
 	    }
 
 	    _createClass(List, [{
+	        key: 'componentDidMount',
+	        value: function componentDidMount() {
+	            var list = this;
+	            var dragging = undefined;
+	            var indexDrag = undefined;
+	            $('#toplevel').on('dragstart', function (event) {
+	                event.preventDefault();
+
+	                dragging = true;
+	                indexDrag = parseInt(event.target.getAttribute("data-index"));
+	            });
+
+	            $('#toplevel').on('dragend', function (event) {
+	                dragging = false;
+	                indexDrag = null;
+	            });
+
+	            window.addEventListener('mousemove', function (event) {
+
+	                if (dragging) {
+	                    console.log('dragging');
+	                    list.setState({ target: { index: indexDrag, x: event.pageX, y: event.pageY } });
+	                }
+	            });
+	        }
+	    }, {
 	        key: 'addTodo',
 	        value: function addTodo() {
 	            var todoText = this.refs.todotext.value;
-	            console.log(todoText);
 	            this.refs.todotext.value = '';
-	            var newTodo = { text: todoText, id: this.state.comments.length.toString() + ':' + Math.random().toString() };
+	            var newTodo = { text: todoText, id: this.state.comments.length.toString() };
 	            this.setState({ comments: this.state.comments.concat([newTodo]) });
 	        }
 	    }, {
 	        key: 'showTodos',
 	        value: function showTodos() {
-	            return this.state.comments.map(function (comment) {
-	                return React.createElement(Comments, { comment: comment });
+	            var _this = this;
+
+	            return this.state.comments.map(function (comment, i) {
+	                var styles = {};
+	                if (i === _this.state.target.index) {
+	                    styles.position = 'absolute';
+	                    styles.left = _this.state.target.x;
+	                    styles.top = _this.state.target.y;
+	                }
+	                return React.createElement(Comments, { styles: styles, index: i, comment: comment });
 	            });
 	        }
 	    }, {
@@ -96,7 +130,7 @@
 	        value: function render() {
 	            return React.createElement(
 	                'div',
-	                null,
+	                { id: 'toplevel' },
 	                React.createElement('input', { ref: 'todotext', type: 'text' }),
 	                React.createElement(
 	                    'button',
@@ -28162,10 +28196,13 @@
 	    _createClass(Comments, [{
 	        key: 'render',
 	        value: function render() {
-	            console.log(this.props);
 	            return React.createElement(
 	                'p',
-	                { key: this.props.comment.id, id: this.props.comment.id },
+	                {
+	                    style: this.props.styles,
+	                    'data-index': this.props.index,
+	                    key: this.props.index,
+	                    id: this.props.comment.id },
 	                this.props.comment.text
 	            );
 	        }
@@ -28175,7 +28212,9 @@
 	})(React.Component);
 
 	Comment.propTypes = {
-	    comment: React.PropTypes.object
+	    comment: React.PropTypes.object,
+	    index: React.PropTypes.number,
+	    styles: React.PropTypes.object
 	};
 
 	module.exports = Comments;
